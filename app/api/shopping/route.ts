@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getSupabaseServerConfig } from "@/lib/supabase";
 
 type ShoppingItemRecord = {
   id: number;
@@ -6,8 +7,7 @@ type ShoppingItemRecord = {
   purchased: boolean;
 };
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const { url: supabaseUrl, key: supabaseKey } = getSupabaseServerConfig();
 
 function getMissingConfigResponse() {
   return NextResponse.json(

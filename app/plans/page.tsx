@@ -696,6 +696,13 @@ export default function PlansPage() {
       if (!uploadResponse.ok) {
         const uploadData = (await uploadResponse.json()) as { message?: string };
 
+        console.error("Supabase photo upload failed", {
+          bucket: tripPhotosBucket,
+          filePath,
+          status: uploadResponse.status,
+          response: uploadData,
+        });
+
         throw new Error(uploadData.message ?? "Failed to upload file to trip-photos bucket.");
       }
 
@@ -713,6 +720,7 @@ export default function PlansPage() {
         fileInputRef.current.value = "";
       }
     } catch (error) {
+      console.error("Upload Photo failed", error);
       setErrorMessage(error instanceof Error ? error.message : "Failed to upload moment.");
     } finally {
       setIsPhotoSaving(false);
@@ -865,6 +873,19 @@ export default function PlansPage() {
       const data = (await response.json()) as EventRecord | { error?: string };
 
       if (!response.ok) {
+        console.error("Add Event failed", {
+          status: response.status,
+          response: data,
+          payload: {
+            ...(modalMode === "edit" ? { id: editingEventId } : {}),
+            date: formState.date,
+            time: formState.time,
+            title: formState.title.trim(),
+            category: formState.category,
+            rsvp_count: Number(formState.rsvp_count),
+          },
+        });
+
         throw new Error("error" in data ? data.error : "Failed to save event.");
       }
 
@@ -883,6 +904,7 @@ export default function PlansPage() {
       setView("Daily");
       closeForm();
     } catch (error) {
+      console.error("Add Event request threw", error);
       setErrorMessage(error instanceof Error ? error.message : "Failed to save event.");
     } finally {
       setIsSaving(false);
