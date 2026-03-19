@@ -47,7 +47,14 @@ export function safeDate(value: string | null | undefined) {
     return null;
   }
 
-  const parsedDate = new Date(value.includes("T") ? value : value.replace(/-/g, "/").replace(/ /g, "T"));
+  const parts = value.split(/[-/ T]/);
+  const year = Number.parseInt(parts[0], 10);
+  const month = Number.parseInt(parts[1], 10) - 1;
+  const day = Number.parseInt(parts[2], 10);
+  const hour = parts[3] ? Number.parseInt(parts[3], 10) : 0;
+  const minute = parts[4] ? Number.parseInt(parts[4], 10) : 0;
+
+  const parsedDate = new Date(year, month, day, hour, minute);
 
   if (Number.isNaN(parsedDate.getTime())) {
     return null;
