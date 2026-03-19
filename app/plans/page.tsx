@@ -7,7 +7,9 @@ import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent 
 import {
   categoryOrder,
   categoryStyles,
+  formatDateSafely,
   formatTimeLabel,
+  parseDateSafely,
   tripDates,
   type EventCategory,
   type EventRecord,
@@ -57,12 +59,18 @@ const initialFormState: FormState = {
   rsvp_count: "0",
 };
 
-function parseDateSafely(value: string) {
-  return new Date(value.replace(/-/g, "/"));
-}
-
 function getCountdownParts() {
-  const tripStart = parseDateSafely("2026/03/25 06:00:00");
+  const tripStart = parseDateSafely("2026-03-25 06:00:00");
+
+  if (!tripStart) {
+    return {
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    };
+  }
+
   const difference = tripStart.getTime() - Date.now();
 
   if (difference <= 0) {
@@ -1083,13 +1091,15 @@ export default function PlansPage() {
                           {photo.caption || "Shared family memory"}
                         </p>
                       )}
+                      {(() => {
+                        const formattedCreatedAt = formatDateSafely(photo.created_at);
+
+                        return (
                       <p className="mt-3 text-sm font-semibold uppercase tracking-[0.18em] text-[#001f3f]/55">
-                        {parseDateSafely(photo.created_at).toLocaleDateString(undefined, {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
+                        {formattedCreatedAt ?? "Date unavailable"}
                       </p>
+                        );
+                      })()}
                     </div>
                   </article>
                 ))}

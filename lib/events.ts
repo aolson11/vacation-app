@@ -42,6 +42,35 @@ export const categoryStyles: Record<EventCategory, { filled: string; empty: stri
   },
 };
 
+export function parseDateSafely(value: string | null | undefined) {
+  if (!value) {
+    return null;
+  }
+
+  const normalizedValue = value.replace(/-/g, "/");
+  const parsedDate = new Date(normalizedValue);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return null;
+  }
+
+  return parsedDate;
+}
+
+export function formatDateSafely(value: string | null | undefined, locales?: Intl.LocalesArgument) {
+  const parsedDate = parseDateSafely(value);
+
+  if (!parsedDate) {
+    return null;
+  }
+
+  return parsedDate.toLocaleDateString(locales, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 export function formatTimeLabel(time24: string) {
   const [hourText, minute] = time24.split(":");
   const hour = Number(hourText);
