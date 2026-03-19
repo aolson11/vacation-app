@@ -42,7 +42,7 @@ export const categoryStyles: Record<EventCategory, { filled: string; empty: stri
   },
 };
 
-export function parseDateSafely(value: string | null | undefined) {
+export function safeDate(value: string | null | undefined) {
   if (!value) {
     return null;
   }
@@ -58,7 +58,7 @@ export function parseDateSafely(value: string | null | undefined) {
 }
 
 export function formatDateSafely(value: string | null | undefined, locales?: Intl.LocalesArgument) {
-  const parsedDate = parseDateSafely(value);
+  const parsedDate = safeDate(value);
 
   if (!parsedDate) {
     return null;

@@ -9,7 +9,7 @@ import {
   categoryStyles,
   formatDateSafely,
   formatTimeLabel,
-  parseDateSafely,
+  safeDate,
   tripDates,
   type EventCategory,
   type EventRecord,
@@ -60,7 +60,7 @@ const initialFormState: FormState = {
 };
 
 function getCountdownParts() {
-  const tripStart = parseDateSafely("2026-03-25 06:00:00");
+  const tripStart = safeDate("2026-03-25 06:00:00");
 
   if (!tripStart) {
     return {
@@ -1091,15 +1091,9 @@ export default function PlansPage() {
                           {photo.caption || "Shared family memory"}
                         </p>
                       )}
-                      {(() => {
-                        const formattedCreatedAt = formatDateSafely(photo.created_at);
-
-                        return (
                       <p className="mt-3 text-sm font-semibold uppercase tracking-[0.18em] text-[#001f3f]/55">
-                        {formattedCreatedAt ?? "Date unavailable"}
+                        {formatDateSafely(photo.created_at) ?? "Date unavailable"}
                       </p>
-                        );
-                      })()}
                     </div>
                   </article>
                 ))}
