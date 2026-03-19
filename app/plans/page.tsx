@@ -841,8 +841,8 @@ export default function PlansPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,#0b7a75_0%,#004d4d_45%,#003b46_100%)] px-6 py-8 text-white">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
+    <main className="min-h-screen max-w-[100vw] overflow-x-hidden bg-[linear-gradient(180deg,#0b7a75_0%,#004d4d_45%,#003b46_100%)] px-4 py-8 text-white sm:px-6">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 overflow-x-hidden">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <Link
             href="/"
@@ -914,11 +914,11 @@ export default function PlansPage() {
           </div>
         ) : null}
 
-        <div className="mx-auto flex w-full max-w-xl rounded-full border-4 border-white/30 bg-white/10 p-2 shadow-[0_10px_24px_rgba(0,0,0,0.25)]">
+        <div className="mx-auto flex w-full max-w-xl flex-wrap gap-2 rounded-[2rem] border-4 border-white/30 bg-white/10 p-2 shadow-[0_10px_24px_rgba(0,0,0,0.25)]">
           <button
             type="button"
             onClick={() => setView("Overview")}
-            className={`flex-1 rounded-full px-6 py-4 text-2xl font-bold transition-colors ${
+            className={`min-w-0 flex-1 rounded-full px-4 py-4 text-lg font-bold transition-colors sm:px-6 sm:text-2xl ${
               view === "Overview" ? "bg-white text-[#001f3f]" : "text-white hover:bg-white/10"
             }`}
           >
@@ -927,7 +927,7 @@ export default function PlansPage() {
           <button
             type="button"
             onClick={() => setView("Daily")}
-            className={`flex-1 rounded-full px-6 py-4 text-2xl font-bold transition-colors ${
+            className={`min-w-0 flex-1 rounded-full px-4 py-4 text-lg font-bold transition-colors sm:px-6 sm:text-2xl ${
               view === "Daily" ? "bg-[#ff851b] text-white" : "text-white hover:bg-white/10"
             }`}
           >
@@ -936,7 +936,7 @@ export default function PlansPage() {
           <button
             type="button"
             onClick={() => setView("Grocery List")}
-            className={`flex-1 rounded-full px-6 py-4 text-2xl font-bold transition-colors ${
+            className={`min-w-0 flex-1 rounded-full px-4 py-4 text-lg font-bold transition-colors sm:px-6 sm:text-2xl ${
               view === "Grocery List" ? "bg-[#ff851b] text-white" : "text-white hover:bg-white/10"
             }`}
           >
@@ -945,7 +945,7 @@ export default function PlansPage() {
           <button
             type="button"
             onClick={() => setView("Moments")}
-            className={`flex-1 rounded-full px-6 py-4 text-2xl font-bold transition-colors ${
+            className={`min-w-0 flex-1 rounded-full px-4 py-4 text-lg font-bold transition-colors sm:px-6 sm:text-2xl ${
               view === "Moments" ? "bg-[#ff851b] text-white" : "text-white hover:bg-white/10"
             }`}
           >

@@ -47,8 +47,7 @@ export function safeDate(value: string | null | undefined) {
     return null;
   }
 
-  const normalizedValue = value.replace(/-/g, "/");
-  const parsedDate = new Date(normalizedValue);
+  const parsedDate = new Date(value.includes("T") ? value : value.replace(/-/g, "/").replace(/ /g, "T"));
 
   if (Number.isNaN(parsedDate.getTime())) {
     return null;
