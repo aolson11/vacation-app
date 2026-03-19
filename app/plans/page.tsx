@@ -57,8 +57,12 @@ const initialFormState: FormState = {
   rsvp_count: "0",
 };
 
+function parseDateSafely(value: string) {
+  return new Date(value.replace(/-/g, "/"));
+}
+
 function getCountdownParts() {
-  const tripStart = new Date("2026-03-25T06:00:00");
+  const tripStart = parseDateSafely("2026/03/25 06:00:00");
   const difference = tripStart.getTime() - Date.now();
 
   if (difference <= 0) {
@@ -1080,7 +1084,7 @@ export default function PlansPage() {
                         </p>
                       )}
                       <p className="mt-3 text-sm font-semibold uppercase tracking-[0.18em] text-[#001f3f]/55">
-                        {new Date(photo.created_at).toLocaleDateString(undefined, {
+                        {parseDateSafely(photo.created_at).toLocaleDateString(undefined, {
                           month: "short",
                           day: "numeric",
                           year: "numeric",
