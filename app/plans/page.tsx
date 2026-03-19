@@ -361,17 +361,47 @@ export default function PlansPage() {
     });
   }
 
-  const sortedEvents = useMemo(() => sortEvents(events), [events]);
+  const validEvents = useMemo(
+    () =>
+      events.filter((event) => {
+        const parsedDate = safeDate(event.date);
+
+        return parsedDate !== null;
+      }),
+    [events],
+  );
+
+  const sortedEvents = useMemo(() => sortEvents(validEvents), [validEvents]);
 
   const eventsByDate = useMemo(() => {
-    return sortedEvents.reduce<Record<string, EventRecord[]>>((accumulator, event) => {
-      if (!accumulator[event.date]) {
-        accumulator[event.date] = [];
-      }
+    try {
+      return sortedEvents.reduce<Record<string, EventRecord[]>>((accumulator, event) => {
+        const parsedDate = safeDate(event.date);
 
-      accumulator[event.date].push(event);
-      return accumulator;
-    }, {});
+        if (!parsedDate) {
+          return accumulator;
+        }
+
+        const matchingTripDay = tripDates.find((day) => {
+          const tripDayDate = safeDate(day.id);
+
+          return tripDayDate !== null && tripDayDate.getTime() === parsedDate.getTime();
+        });
+
+        if (!matchingTripDay) {
+          return accumulator;
+        }
+
+        if (!accumulator[matchingTripDay.id]) {
+          accumulator[matchingTripDay.id] = [];
+        }
+
+        accumulator[matchingTripDay.id].push(event);
+        return accumulator;
+      }, {});
+    } catch {
+      return {};
+    }
   }, [sortedEvents]);
 
   const selectedDay = useMemo(
@@ -914,11 +944,11 @@ export default function PlansPage() {
           </div>
         ) : null}
 
-        <div className="mx-auto flex w-full max-w-xl flex-wrap gap-2 rounded-[2rem] border-4 border-white/30 bg-white/10 p-2 shadow-[0_10px_24px_rgba(0,0,0,0.25)]">
+        <div className="mx-auto flex w-full max-w-xl overflow-x-auto whitespace-nowrap rounded-[2rem] border-4 border-white/30 bg-white/10 p-2 shadow-[0_10px_24px_rgba(0,0,0,0.25)]">
           <button
             type="button"
             onClick={() => setView("Overview")}
-            className={`min-w-0 flex-1 rounded-full px-4 py-4 text-lg font-bold transition-colors sm:px-6 sm:text-2xl ${
+            className={`shrink-0 rounded-full px-4 py-4 text-lg font-bold transition-colors sm:px-6 sm:text-2xl ${
               view === "Overview" ? "bg-white text-[#001f3f]" : "text-white hover:bg-white/10"
             }`}
           >
@@ -927,7 +957,7 @@ export default function PlansPage() {
           <button
             type="button"
             onClick={() => setView("Daily")}
-            className={`min-w-0 flex-1 rounded-full px-4 py-4 text-lg font-bold transition-colors sm:px-6 sm:text-2xl ${
+            className={`ml-2 shrink-0 rounded-full px-4 py-4 text-lg font-bold transition-colors sm:px-6 sm:text-2xl ${
               view === "Daily" ? "bg-[#ff851b] text-white" : "text-white hover:bg-white/10"
             }`}
           >
@@ -936,7 +966,7 @@ export default function PlansPage() {
           <button
             type="button"
             onClick={() => setView("Grocery List")}
-            className={`min-w-0 flex-1 rounded-full px-4 py-4 text-lg font-bold transition-colors sm:px-6 sm:text-2xl ${
+            className={`ml-2 shrink-0 rounded-full px-4 py-4 text-lg font-bold transition-colors sm:px-6 sm:text-2xl ${
               view === "Grocery List" ? "bg-[#ff851b] text-white" : "text-white hover:bg-white/10"
             }`}
           >
@@ -945,7 +975,7 @@ export default function PlansPage() {
           <button
             type="button"
             onClick={() => setView("Moments")}
-            className={`min-w-0 flex-1 rounded-full px-4 py-4 text-lg font-bold transition-colors sm:px-6 sm:text-2xl ${
+            className={`ml-2 shrink-0 rounded-full px-4 py-4 text-lg font-bold transition-colors sm:px-6 sm:text-2xl ${
               view === "Moments" ? "bg-[#ff851b] text-white" : "text-white hover:bg-white/10"
             }`}
           >
