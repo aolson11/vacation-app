@@ -132,6 +132,23 @@ function buildStoragePublicUrl(filePath: string) {
   return `${supabaseUrl}/storage/v1/object/public/${tripPhotosBucket}/${filePath}`;
 }
 
+function normalizeTimeValue(value: string) {
+  const [hour = "", minute = ""] = value.split(":");
+
+  if (!hour || !minute) {
+    return value;
+  }
+
+  return `${hour}:${minute}`;
+}
+
+function normalizeEventRecord(record: EventRecord): EventRecord {
+  return {
+    ...record,
+    time: normalizeTimeValue(record.time),
+  };
+}
+
 function normalizePhotoRecord(record: Record<string, unknown>): PhotoRecord | null {
   if (
     typeof record.id !== "string" ||
@@ -208,7 +225,7 @@ export default function PlansPage() {
   const [isShoppingSaving, setIsShoppingSaving] = useState(false);
   const [isPhotoSaving, setIsPhotoSaving] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [, setErrorMessage] = useState<string | null>(null);
   const [formState, setFormState] = useState<FormState>(initialFormState);
   const [modalMode, setModalMode] = useState<ModalMode>("create");
   const [editingEventId, setEditingEventId] = useState<number | null>(null);
@@ -254,7 +271,7 @@ export default function PlansPage() {
           throw new Error("error" in shoppingData ? shoppingData.error : "Failed to load shopping list.");
         }
 
-        setEvents(eventsData as EventRecord[]);
+        setEvents((eventsData as EventRecord[]).map((event) => normalizeEventRecord(event)));
         setShoppingItems(shoppingData as ShoppingItem[]);
 
         if (photosResponse) {
@@ -423,7 +440,7 @@ export default function PlansPage() {
     setEditingEventId(event.id);
     setFormState({
       date: event.date as DayId,
-      time: event.time,
+      time: normalizeTimeValue(event.time),
       title: event.title,
       category: event.category,
       rsvp_count: String(event.rsvp_count),
@@ -459,7 +476,7 @@ export default function PlansPage() {
       setEvents((currentEvents) =>
         sortEvents(
           currentEvents.map((item) =>
-            item.id === eventRecord.id ? (data as EventRecord) : item,
+            item.id === eventRecord.id ? normalizeEventRecord(data as EventRecord) : item,
           ),
         ),
       );
@@ -854,11 +871,13 @@ export default function PlansPage() {
       setEvents((currentEvents) => {
         if (modalMode === "edit") {
           return sortEvents(
-            currentEvents.map((item) => (item.id === editingEventId ? (data as EventRecord) : item)),
+            currentEvents.map((item) =>
+              item.id === editingEventId ? normalizeEventRecord(data as EventRecord) : item,
+            ),
           );
         }
 
-        return sortEvents([...currentEvents, data as EventRecord]);
+        return sortEvents([...currentEvents, normalizeEventRecord(data as EventRecord)]);
       });
       setSelectedDayId(formState.date);
       setView("Daily");
@@ -937,12 +956,6 @@ export default function PlansPage() {
             </div>
           </div>
         </section>
-
-        {errorMessage ? (
-          <div className="rounded-3xl border border-[#ff851b]/50 bg-[#ff851b]/15 px-6 py-5 text-lg font-medium text-white shadow-[0_10px_24px_rgba(0,0,0,0.2)]">
-            {errorMessage}
-          </div>
-        ) : null}
 
         <div className="mx-auto flex w-full max-w-xl overflow-x-auto whitespace-nowrap rounded-[2rem] border-4 border-white/30 bg-white/10 p-2 shadow-[0_10px_24px_rgba(0,0,0,0.25)]">
           <button
@@ -1482,7 +1495,6 @@ export default function PlansPage() {
                   <span className="text-lg font-bold">RSVP Count</span>
                   <input
                     type="number"
-                    min="0"
                     required
                     value={formState.rsvp_count}
                     onChange={(event) => setFormState((currentState) => ({ ...currentState, rsvp_count: event.target.value }))}
